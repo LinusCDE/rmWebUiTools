@@ -63,7 +63,7 @@ def printStats(files):
         'TOTAL'
     ))
     print(folderFormat.format(
-        '%d files' % len(filesPerFolder),  # "TOTAL"
+        '%d folders' % len(filesPerFolder),  # "TOTAL"
         '%.1f files' % mean(filesPerFolder),  # "MEAN (AVG)"
         '%.0f files' % median(filesPerFolder), # "MEDIAN"
         '%d files' % sum(filesPerFolder)  # "TOTAL"
