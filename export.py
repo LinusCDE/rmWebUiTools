@@ -81,6 +81,10 @@ def printUsageAndExit():
 
 
 if __name__ == '__main__':
+    # Disclaimer:
+    print('DISCLAIMER: Please be aware that this puts the STRAIN of creating exported pdf files on YOUR REMARKABLE DEVICE rather than this computer.\n' \
+          'This can lead to UNEXPECTED BEHAVIOUR when many and/or big files are being exported.\n' \
+          'I WON\'T TAKE ANY RESPONSIBILITY for potential damage this may induce!\n', file=stderr)
 
     # Argument parsing:
     ap = ArgumentParser(
