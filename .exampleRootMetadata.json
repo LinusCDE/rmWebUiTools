@@ -132,5 +132,36 @@
       "m32": 0,
       "m33": 1
     }
-  }
+  },
+  {
+    "Bookmarked": false,
+    "CurrentPage": 0,
+    "ID": "2651bed5-9565-40f7-a517-bc0b960ab0f3",
+    "ModifiedClient": "2018-11-20T12:12:34.00Z",
+    "Parent": "",
+    "Type": "DocumentType",
+    "Version": 3,
+    "VissibleName": "Book A",
+    "extraMetadata": {
+    },
+    "fileType": "epub",
+    "fontName": "",
+    "lastOpenedPage": 0,
+    "lineHeight": -1,
+    "margins": 100,
+    "orientation": "portrait",
+    "pageCount": 831,
+    "textScale": 1,
+    "transform": {
+        "m11": 1,
+        "m12": 0,
+        "m13": 0,
+        "m21": 0,
+        "m22": 1,
+        "m23": 0,
+        "m31": 0,
+        "m32": 0,
+        "m33": 1
+    }
+},
 ]
