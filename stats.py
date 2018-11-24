@@ -70,7 +70,7 @@ def printStats(files):
         'FILES',
         'MEAN (AVG)',
         'MEDIAN',
-        'MOST',
+        'BIGGEST',
         'TOTAL'
     ))
     for typeName, pagesPerType in {'notebook': pagesPerNotebook, 'pdf': pagesPerPdf, 'epub': pagesPerEpub}.items():
@@ -82,7 +82,7 @@ def printStats(files):
             '%d files' % len(pagesPerType),  # "FILES"
             '%.1f pages' % mean(pagesPerType),  # "MEAN (AVG)"
             '%.0f pages' % median(pagesPerType),  # "MEDIAN"
-            '%s pages' % max(pagesPerType),  # "MOST"
+            '%s pages' % max(pagesPerType),  # "BIGGEST"
             '%s pages' % sum(pagesPerType)  # "TOTAL"
         ))
 
