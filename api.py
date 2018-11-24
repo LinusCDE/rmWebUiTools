@@ -24,11 +24,15 @@ class RmFile:
         self.isFolder = (metadata['Type'] == 'CollectionType')
         self.files = [] if self.isFolder else None
 
+        # Determine file type:
+        self.isNotebook = not self.isFolder and metadata['fileType'] == ''
+        self.isPdf = not self.isFolder and metadata['fileType'] == 'pdf'
+        self.isEpub = not self.isFolder and metadata['fileType'] == 'epub'
+
         # Easy access of common metadata:
         self.name = metadata['VissibleName'] if 'VissibleName' in metadata else metadata['VisibleName']  # Typo from reMarkable which will probably get fixed in next patch
         self.id = metadata['ID']
         self.isBookmarked = metadata['Bookmarked']
-        self.isNotebook = not self.isFolder and metadata['fileType'] == ''  # PDF files contain the value 'pdf' in fileType
         self.pages = metadata['pageCount'] if not self.isFolder else None
         self.modifiedTimestamp = datetime.strptime(metadata['ModifiedClient'], '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()
 
