@@ -11,14 +11,6 @@ DEBUG = False
 # ------------------------------
 
 
-def average(iterableOfNumbers):
-    # Only seperate function to prevent Zero-Division-Errors and stay clean.
-    amount = len(iterableOfNumbers)
-    sum = sum(iterableOfNumbers)
-    
-    return 0 if amount == 0 else sum / amount
-
-
 def printStats(files):
     '''
     Collect some interesting stats to show off in console.

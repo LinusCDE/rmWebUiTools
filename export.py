@@ -8,8 +8,7 @@ Info: If a file is already exported, it will get skipped by default.
 
 import api
 
-from argparse import ArgumentParser
-from argparse import RawDescriptionHelpFormatter
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from os import makedirs, utime
 from os.path import exists, getmtime
 from sys import stderr
