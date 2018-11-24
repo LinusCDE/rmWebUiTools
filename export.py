@@ -62,11 +62,11 @@ def exportTo(files, targetFolderPath, onlyNotebooks, updateFiles):
                 # Don't override files. Regardless of date:
                 skipFile = True
                 print('INFO: [%d/%d] Skipping file \'%s\' (already exists in your target folder)...' % (i+1, totalExportableFiles, exportableFile.name))
-        
+
         if not exists(path):
             # File never exported:
             print('INFO: [%d/%d] Exporting \'%s\'...' % (i+1, totalExportableFiles, exportableFile.name))
-        
+
         # Export file if necessary:
         if not skipFile:
             exportableFile.exportPdf(path)
@@ -127,5 +127,3 @@ if __name__ == '__main__':
             print(file=stderr)
             print('Please make sure your reMarkable is connected to this PC and you have enabled the USB Webinterface in "Settings -> Storage".', file=stderr)
             exit(1)
-
-    

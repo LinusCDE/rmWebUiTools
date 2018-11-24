@@ -37,11 +37,11 @@ def printStats(files):
             else:
                 a = dict()
                 raise RuntimeError('Unexpeted filetype for "%s": %s' % (rmFile.path(), rmFile.metadata.get('fileType', '<No fileType-Metadata!>')))
-    
+
     # Collect root folder / current list as folder if given:
     if isinstance(files, Iterable):
         filesPerFolder.append(len(files))
-    
+
 
     # Print collected data:
 
@@ -76,7 +76,7 @@ def printStats(files):
     for typeName, pagesPerType in {'notebook': pagesPerNotebook, 'pdf': pagesPerPdf, 'epub': pagesPerEpub}.items():
         if len(pagesPerType) == 0:
             continue
-        
+
         print(docFormat.format(
             typeName,  # "TYPE"
             '%d files' % len(pagesPerType),  # "FILES"
@@ -85,8 +85,9 @@ def printStats(files):
             '%s pages' % max(pagesPerType),  # "MOST"
             '%s pages' % sum(pagesPerType)  # "TOTAL"
         ))
-    
-    print('\nThe page statistics of epub may not be correct as the device sometimes has trouble calculating them.')
+
+    if len(pagesPerEpub) > 0:
+        print('\nThe page statistics of epub may not be correct as the device sometimes has trouble calculating them.')
 
 
 

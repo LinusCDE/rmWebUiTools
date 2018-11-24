@@ -40,7 +40,7 @@ class RmFile:
         # Prevent faulty structures:
         if '/' in self.name:
             name = name.replace('/', '')
-    
+
     def path(self, basePath=''):
         '''
         Returns the complete path including this file/folder.
@@ -48,13 +48,13 @@ class RmFile:
         '''
         if basePath and not basePath.endswith('/'):
             basePath += '/'
-        
+
         path = self.name
         parent = self.parent
         while parent:
             path = parent.name + '/' + path
             parent = parent.parent
-        
+
         return basePath + path
 
     def parentFolderPath(self, basePath=''):
@@ -157,7 +157,7 @@ def fetchFileStructure(parentRmFile=None):
             parentRmFile.files.append(rmFile)
         else:
             rootFiles.append(rmFile)
-        
+
         # Fetch subdirectories recursivly:
         if rmFile.isFolder:
             fetchFileStructure(rmFile)
