@@ -3,13 +3,6 @@
 This is a collection of scripts that utilize the reMarkable USB webinterface to export files.
 
 
-## Installation
-
-You need to have a recent version of Python 3 as well as these dependencies (to be installed using pip):
-- argparse (for export.py)
-- requests
-
-
 ## DISCLAIMER
 
 Using the export functionality, the script will prompt your device to **export every single file** onto your pc.
@@ -17,20 +10,35 @@ This will - as of now - lead to freezes and other problems, as the software is n
 
 I (and reMarkable AS too) **WON'T take any responsibility** for potential damage done to your device using this software.
 
+
+## Installation
+
+First ensure you have a recent version of [Python 3](https://www.python.org/downloads/) installed.
+
+To install all dependencies, execute this command in your terminal or command prompt:
+```
+$ pip install requests
+```
+
+Next you clone this repository (or download it as a zip file), and go into the folder using the `cd` command in your terminal or command prompt.
+
+
 ## Usage
 
-The scripts are meant to be ran with python 3 or as executable (on unix systems).
+The scripts (except `api.py`) are meant to be executed with python 3.
 
-The scripts should run on Windows which currently isn't tested.
+This can be done by typing `python` followed by the name of the script file.
+On unix systems, you can also execute those scripts like any other shell script.
 
 Examples:
 ```
-$ python3 export.py --only-notebooks --update NotebookBackup
+$ python export.py --only-notebooks --update NotebookBackup
 $ ./export.py --only-notebooks --update NotebookBackup
+$ ./export.py --help
 
 $ ./tree.py
 $ ./paths.py
-$ ./countNotebookPages.py
+$ ./stats.py
 ```
 
 
