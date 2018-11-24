@@ -15,7 +15,7 @@ You need to have a recent version of Python 3 as well as these dependencies (to 
 Using the export functionality, the script will prompt your device to **export every single file** onto your pc.
 This will - as of now - lead to freezes and other problems, as the software is not specifically suited for this usecase.
 
-I (and reMarkable AS too) WON'T take any responsibility for potential damage done to your device using this software.
+I (and reMarkable AS too) **WON'T take any responsibility** for potential damage done to your device using this software.
 
 ## Usage
 
