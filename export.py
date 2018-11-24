@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     # Print info regarding arguments:
     if updateFiles:
-        print('INFO: Updating files that have been changed recently. (Does not delete them old files.)')
+        print('INFO: Updating files that have been changed recently. (Does not delete old files.)')
     if onlyNotebooks:
         print('INFO: Export only notebooks.')
 
