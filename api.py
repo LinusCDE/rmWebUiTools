@@ -39,7 +39,7 @@ class RmFile:
 
         # Prevent faulty structures:
         if '/' in self.name:
-            name = name.replace('/', '')
+            self.name = self.name.replace('/', '')
 
     def path(self, basePath=''):
         '''
