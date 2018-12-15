@@ -18,8 +18,20 @@ from sys import stderr
 DEBUG = False
 # ------------------------------
 
-def exportTo(files, targetFolderPath, onlyNotebooks, updateFiles):
+def exportTo(files, targetFolderPath, onlyNotebooks, updateFiles, onlyPathPrefix=None):
+    # Preprocessing filterPath:
+    if onlyPathPrefix is not None:
+        if onlyPathPrefix.startswith('/'):
+            onlyPathPrefix = onlyPathPrefix[1:]
+        onlyPathPrefix = onlyPathPrefix.lower()
+        if onlyPathPrefix == '':
+            onlyPathPrefix = None
+
     exportableFiles = list(filter(lambda rmFile: rmFile.isFolder is False, api.iterateAll(files)))
+
+    # Apply filter:
+    if onlyPathPrefix is not None:
+        exportableFiles = list(filter(lambda rmFile: rmFile.path().lower().startswith(onlyPathPrefix), exportableFiles))
 
     # Filter for only notebooks if requested:
     if onlyNotebooks:
@@ -64,7 +76,6 @@ def exportTo(files, targetFolderPath, onlyNotebooks, updateFiles):
                 print('INFO: [%d/%d] Skipping file \'%s\' (already exists in your target folder)...' % (i+1, totalExportableFiles, exportableFile.name))
 
         if not exists(path):
-            # File never exported:
             print('INFO: [%d/%d] Exporting \'%s\'...' % (i+1, totalExportableFiles, exportableFile.name))
 
         # Export file if necessary:
@@ -95,28 +106,35 @@ if __name__ == '__main__':
     ap.add_argument(
         '-n', '--only-notebooks',
         action='store_true', default=False, help='Skips all files except notebooks')
+    
+    ap.add_argument(
+        '-f', '--only-path-prefix', metavar='path',
+        default='', help='Skips all files that DON\'T starts with the given path (case-insensitive)')
 
     ap.add_argument(
         '-u', '--update',
         action='store_true', default=False, help='Overrides/Updates all updated files. Does not remove deleted files!')
 
     args = ap.parse_args()
-    targetFolder, onlyNotebooks, updateFiles = args.target_folder, args.only_notebooks, args.update
-
+    targetFolder, onlyNotebooks, updateFiles, onlyPathPrefix = args.target_folder, args.only_notebooks, args.update, args.only_path_prefix
 
     # Print info regarding arguments:
     if updateFiles:
         print('INFO: Updating files that have been changed recently. (Does not delete old files.)')
     if onlyNotebooks:
         print('INFO: Export only notebooks.')
-
+    if onlyPathPrefix:
+        print('INFO: Only exporting files whose path begins with given filter (case insensitive).')
 
     try:
         # Actual process:
         print('INFO: Fetching file structure...')
         files = api.fetchFileStructure()
-        exportTo(files, targetFolder, onlyNotebooks, updateFiles)
+        exportTo(files, targetFolder, onlyNotebooks, updateFiles, onlyPathPrefix)
         print('Done!')
+    except KeyboardInterrupt: 
+        print('Cancelled.')
+        exit(0)
     except Exception as ex:
         # Error handling:
         if DEBUG:
