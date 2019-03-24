@@ -131,7 +131,7 @@ if __name__ == '__main__':
         print('INFO: Updating files that have been changed recently. (Does not delete old files.)')
     if onlyNotebooks:
         print('INFO: Export only notebooks.')
-    if onlyNotebooks:
+    if onlyBookmarked:
         print('INFO: Export only bookmarked files.')
     if onlyPathPrefix:
         print('INFO: Only exporting files whose path begins with given filter (case insensitive).')
