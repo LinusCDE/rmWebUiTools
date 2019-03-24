@@ -18,7 +18,7 @@ from sys import stderr
 DEBUG = False
 # ------------------------------
 
-def exportTo(files, targetFolderPath, onlyNotebooks, updateFiles, onlyPathPrefix=None):
+def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix=None):
     # Preprocessing filterPath:
     if onlyPathPrefix is not None:
         if onlyPathPrefix.startswith('/'):
@@ -36,6 +36,10 @@ def exportTo(files, targetFolderPath, onlyNotebooks, updateFiles, onlyPathPrefix
     # Filter for only notebooks if requested:
     if onlyNotebooks:
         exportableFiles = list(filter(lambda rmFile: rmFile.isNotebook, exportableFiles))
+
+    # Filter for only bookmared if requested:
+    if onlyBookmarked:
+        exportableFiles = list(filter(lambda rmFile: rmFile.isBookmarked, exportableFiles))
 
     totalExportableFiles = len(exportableFiles)
 
@@ -106,7 +110,11 @@ if __name__ == '__main__':
     ap.add_argument(
         '-n', '--only-notebooks',
         action='store_true', default=False, help='Skips all files except notebooks')
-    
+
+    ap.add_argument(
+        '-b', '--only-bookmarked',
+        action='store_true', default=False, help='Skips all files except bookmarked')
+
     ap.add_argument(
         '-f', '--only-path-prefix', metavar='path',
         default='', help='Skips all files that DON\'T starts with the given path (case-insensitive)')
@@ -116,13 +124,15 @@ if __name__ == '__main__':
         action='store_true', default=False, help='Overrides/Updates all updated files. Does not remove deleted files!')
 
     args = ap.parse_args()
-    targetFolder, onlyNotebooks, updateFiles, onlyPathPrefix = args.target_folder, args.only_notebooks, args.update, args.only_path_prefix
+    targetFolder, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix = args.target_folder, args.only_notebooks, args.only_bookmarked, args.update, args.only_path_prefix
 
     # Print info regarding arguments:
     if updateFiles:
         print('INFO: Updating files that have been changed recently. (Does not delete old files.)')
     if onlyNotebooks:
         print('INFO: Export only notebooks.')
+    if onlyNotebooks:
+        print('INFO: Export only bookmarked files.')
     if onlyPathPrefix:
         print('INFO: Only exporting files whose path begins with given filter (case insensitive).')
 
@@ -130,9 +140,9 @@ if __name__ == '__main__':
         # Actual process:
         print('INFO: Fetching file structure...')
         files = api.fetchFileStructure()
-        exportTo(files, targetFolder, onlyNotebooks, updateFiles, onlyPathPrefix)
+        exportTo(files, targetFolder, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix)
         print('Done!')
-    except KeyboardInterrupt: 
+    except KeyboardInterrupt:
         print('Cancelled.')
         exit(0)
     except Exception as ex:
