@@ -12,6 +12,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from os import makedirs, utime
 from os.path import exists, getmtime
 from sys import stderr
+import backup_daemon as bd
 
 # ------------------------------
 # Config:
@@ -88,6 +89,7 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
             utime(path, (exportableFile.modifiedTimestamp, exportableFile.modifiedTimestamp))  # Use timestamp from the reMarkable device
 
 
+
 def printUsageAndExit():
     print('Usage: %s [--only-notebooks] [--override-modified] <Target-Folder>' % argv[0], file=stderr)
     print('WARNING: Existing files won''t get overridden (helpful for continuing an interrupted export).')
@@ -123,8 +125,19 @@ if __name__ == '__main__':
         '-u', '--update',
         action='store_true', default=False, help='Overrides/Updates all updated files. Does not remove deleted files!')
 
+    ap.add_argument(
+        '-d', '--daemon',
+        metavar="start/stop/restart", help="Starts, stops or restarts the daemon for automatic backups."
+    )
+
     args = ap.parse_args()
-    targetFolder, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix = args.target_folder, args.only_notebooks, args.only_bookmarked, args.update, args.only_path_prefix
+    targetFolder, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix, daemonArg = args.target_folder, args.only_notebooks, args.only_bookmarked, args.update, args.only_path_prefix, args.daemon
+
+    # Check if the program should be started in daemon mode.
+    if daemonArg is not None:
+        bd.handleDaemonArg(daemonArg)
+        exit(0)
+
 
     # Print info regarding arguments:
     if updateFiles:
