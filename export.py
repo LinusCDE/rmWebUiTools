@@ -13,13 +13,14 @@ from os import makedirs, utime
 from os.path import exists, getmtime
 from sys import stderr
 import backup_daemon as bd
+from multiprocessing import Queue
 
 # ------------------------------
 # Config:
 DEBUG = False
 # ------------------------------
 
-def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix=None):
+def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix=None, status_window=None):
     # Preprocessing filterPath:
     if onlyPathPrefix is not None:
         if onlyPathPrefix.startswith('/'):
@@ -43,6 +44,9 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
         exportableFiles = list(filter(lambda rmFile: rmFile.isBookmarked, exportableFiles))
 
     totalExportableFiles = len(exportableFiles)
+
+    if status_window is not None:
+        status_window.set_total_files(totalExportableFiles)
 
     lastDirectory = None
     for i, exportableFile in enumerate(exportableFiles):
@@ -87,7 +91,8 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
         if not skipFile:
             exportableFile.exportPdf(path)
             utime(path, (exportableFile.modifiedTimestamp, exportableFile.modifiedTimestamp))  # Use timestamp from the reMarkable device
-
+            if status_window is not None:
+                status_window.update_status()
 
 
 def printUsageAndExit():
@@ -133,11 +138,6 @@ if __name__ == '__main__':
     args = ap.parse_args()
     targetFolder, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix, daemonArg = args.target_folder, args.only_notebooks, args.only_bookmarked, args.update, args.only_path_prefix, args.daemon
 
-    # Check if the program should be started in daemon mode.
-    if daemonArg is not None:
-        bd.handleDaemonArg(daemonArg)
-        exit(0)
-
 
     # Print info regarding arguments:
     if updateFiles:
@@ -151,10 +151,18 @@ if __name__ == '__main__':
 
     try:
         # Actual process:
-        print('INFO: Fetching file structure...')
-        files = api.fetchFileStructure()
-        exportTo(files, targetFolder, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix)
-        print('Done!')
+        # Check if the program should be started in daemon mode.
+        if daemonArg is not None:
+            print("Starting in daemon mode...")
+            queue = Queue()
+            bd.start_daemon(queue, targetFolder, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix)
+            while True:
+                queue.get()()
+        else:
+            print('INFO: Fetching file structure...')
+            files = api.fetchFileStructure()
+            exportTo(files, targetFolder, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix)
+            print('Done!')
     except KeyboardInterrupt:
         print('Cancelled.')
         exit(0)
