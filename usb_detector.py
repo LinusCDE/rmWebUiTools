@@ -16,7 +16,7 @@ class USBDetector():
         for bus in busses:
             devices = bus.devices
             for dev in devices:
-                devs.append(dev.idProduct)
+                devs.append((dev.idVendor, dev.idProduct))
         return devs
 
 
@@ -25,8 +25,7 @@ class USBDetector():
 
 
     def check_if_remarkable(self, dev):
-        # todo implement vendor and product id lookup
-        return True
+        return dev[0] == 0x04B3 and dev[1] == 0x4010
 
 
     def detect_newly_added_usb_device(self):
