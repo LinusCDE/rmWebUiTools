@@ -1,5 +1,7 @@
 # rmWebUiTools
 
+[![Mentioned in Awesome reMarkable](https://awesome.re/mentioned-badge.svg)](https://github.com/reHackable/awesome-reMarkable)
+
 This is a collection of scripts that utilize the reMarkable USB webinterface to export files.
 
 
