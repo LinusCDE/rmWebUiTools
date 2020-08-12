@@ -25,8 +25,7 @@ class RmFile:
         self.files = [] if self.isFolder else None
 
         # Determine file type:
-        # Empty fileType was notebook until 1.8
-        self.isNotebook = not self.isFolder and (metadata['fileType'] == 'notebook' or metadata['fileType'] == '')
+        self.isNotebook = not self.isFolder and metadata['fileType'] == 'notebook'
         self.isPdf = not self.isFolder and metadata['fileType'] == 'pdf'
         self.isEpub = not self.isFolder and metadata['fileType'] == 'epub'
 
