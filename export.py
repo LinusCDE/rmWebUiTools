@@ -60,7 +60,11 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
         # Create necessary directories:
         parentDir = exportableFile.parentFolderPath(targetFolderPath)
         if parentDir:  # May be None in the root
-            makedirs(parentDir, exist_ok=True)
+            try:
+                makedirs(parentDir, exist_ok=True)
+            except Exception as ex:
+                print('ERROR: Failed to create directories: "%s"' % parentDir)
+                raise ex
 
         # Check if file needs to be downloaded and output appropriate messages:
         skipFile = False
@@ -84,8 +88,16 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
 
         # Export file if necessary:
         if not skipFile:
-            exportableFile.exportPdf(path)
-            utime(path, (exportableFile.modifiedTimestamp, exportableFile.modifiedTimestamp))  # Use timestamp from the reMarkable device
+            try:
+                exportableFile.exportPdf(path)
+            except Exception as ex:
+                print('ERROR: Failed to export "%s" to "%s"' % (exportableFile.name, path))
+                raise ex
+            try:
+                utime(path, (exportableFile.modifiedTimestamp, exportableFile.modifiedTimestamp))  # Use timestamp from the reMarkable device
+            except Exception as ex:
+                print('ERROR: Failed to change timestamp for exported file "%s"' % path)
+                raise ex
 
 
 def printUsageAndExit():
