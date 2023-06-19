@@ -9,14 +9,20 @@ Info: If a file is already exported, it will get skipped by default.
 import api
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from datetime import datetime
 from os import makedirs, utime
 from os.path import exists, getmtime
 from sys import stderr
+from time import time
 
 # ------------------------------
 # Config:
 DEBUG = False
 # ------------------------------
+
+def local_time_offset():
+    now_timestamp = time()
+    return (datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)).total_seconds()
 
 def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix=None):
     # Preprocessing filterPath:
@@ -71,7 +77,7 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
         if exists(path):
             # Existing exported file:
             if updateFiles:
-                if int(getmtime(path)) < int(exportableFile.modifiedTimestamp):
+                if int(getmtime(path)) < int(exportableFile.modifiedTimestamp + local_time_offset()):
                     # Update outdated export:
                     print('INFO: [%d/%d] Updating file \'%s\'...' % (i+1, totalExportableFiles, exportableFile.name))
                 else:
@@ -94,11 +100,11 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
                 print('ERROR: Failed to export "%s" to "%s"' % (exportableFile.name, path))
                 raise ex
             try:
-                utime(path, (exportableFile.modifiedTimestamp, exportableFile.modifiedTimestamp))  # Use timestamp from the reMarkable device
+                local_mod_time = exportableFile.modifiedTimestamp + local_time_offset() 
+                utime(path, (local_mod_time, local_mod_time))  # Use timestamp from the reMarkable device
             except Exception as ex:
                 print('ERROR: Failed to change timestamp for exported file "%s"' % path)
                 raise ex
-
 
 def printUsageAndExit():
     print('Usage: %s [--only-notebooks] [--override-modified] <Target-Folder>' % argv[0], file=stderr)
