@@ -178,19 +178,19 @@ def findId(filesOrRmFile, fileId):
             return rmFile
     return None
 
-def getRmFileFor(targetFolder):
+def getRmFileFor(fileOrFolderPath):
     '''
-    Search for given targetFolder on device.
+    Search for given file or folder and return the corresponding RmFile.
 
-    Returns RmFile of targetFolder if found. Otherwise None.
+    Returns RmFile if file or folder was found. Otherwise None.
     '''
     files = fetchFileStructure()
     for rmFile in iterateAll(files):
-        if rmFile.path() == targetFolder:
+        if rmFile.path() == fileOrFolderPath:
             return rmFile
     return None
 
-def navigateTo(targetFolder):
+def changeDirectory(targetFolder):
     '''
     Navigates to a given folder.
 
