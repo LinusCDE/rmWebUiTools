@@ -177,3 +177,38 @@ def findId(filesOrRmFile, fileId):
         if rmFile.id == fileId:
             return rmFile
     return None
+
+def getRmFileFor(fileOrFolderPath):
+    '''
+    Search for given file or folder and return the corresponding RmFile.
+
+    Returns RmFile if file or folder was found. Otherwise None.
+    '''
+    files = fetchFileStructure()
+    for rmFile in iterateAll(files):
+        if rmFile.path() == fileOrFolderPath:
+            return rmFile
+    return None
+
+def changeDirectory(targetFolder):
+    '''
+    Navigates to a given folder.
+
+    Raises a RuntimeError in case the given targetFolder cannot be found on the device or is not a folder
+    '''
+    rmFile = getRmFileFor(targetFolder)
+    if rmFile is None:
+        raise RuntimeError("Folder {} could not be found on device".format(targetFolder))
+    if not rmFile.isFolder:
+        raise RuntimeError("Given path {} is not a folder on the device".format(targetFolder))
+    
+    requests.post(RM_WEB_UI_URL + "/documents/" + rmFile.id)
+
+def upload(file):
+    '''
+    Uploads a file given by the provided file handle to the currently selected folder.
+    '''
+    files = {'file': file}
+    response = requests.post(RM_WEB_UI_URL + "/upload", files=files)
+    if not response.ok:
+        raise RuntimeError('Upload failed with status code %d' % (response.status_code))
