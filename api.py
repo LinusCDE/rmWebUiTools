@@ -202,7 +202,7 @@ def changeDirectory(targetFolder):
     if not rmFile.isFolder:
         raise RuntimeError("Given path {} is not a folder on the device".format(targetFolder))
     
-    requests.post(RM_WEB_UI_URL + "/documents", "/".join(rmFile.id))
+    requests.post(RM_WEB_UI_URL + "/documents/" + rmFile.id)
 
 def upload(file):
     '''

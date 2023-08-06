@@ -25,11 +25,11 @@ if __name__ == '__main__':
     args = ap.parse_args()
 
     try:
-        api.changeDirectory(args.targetFolder)
+        api.changeDirectory(args.target_folder)
         for file in args.file:
-            print('Uploading {} to {}'.format(file.name, args.targetFolder))
+            print('Uploading {} to {}'.format(file.name, args.target_folder))
             api.upload(file)
-            print('Successfully uploaded {} to {}'.format(file.name, args.targetFolder))
+            print('Successfully uploaded {} to {}'.format(file.name, args.target_folder))
         print('Done!')
     except KeyboardInterrupt:
         print('Cancelled.')
