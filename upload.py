@@ -6,6 +6,7 @@ Upload - Upload either PDFs or ePubs to your remarkable.
 
 import api
 import argparse
+import os
 
 from sys import stderr
 
@@ -27,6 +28,10 @@ if __name__ == '__main__':
     try:
         api.changeDirectory(args.target_folder)
         for file in args.file:
+            file_name, file_extension = os.path.splitext(file.name)
+            if file_extension.lower() not in [".pdf", ".epub"]:
+                print('Only PDFs and ePubs are supported. Skipping {}'.format(file.name))    
+                continue
             print('Uploading {} to {}'.format(file.name, args.target_folder))
             api.upload(file)
             print('Successfully uploaded {} to {}'.format(file.name, args.target_folder))
