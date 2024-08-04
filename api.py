@@ -1,10 +1,11 @@
 '''
-Utilities regarding the reMarkable usb webinterface.
+Utilities regarding the reMarkable USB web interface.
 '''
 
 from collections.abc import Iterable
 from datetime import datetime
 import requests
+import os
 
 
 RM_WEB_UI_URL = 'http://10.11.99.1'  # No trailing slash!
@@ -20,7 +21,7 @@ class RmFile:
         self.metadata = metadata
         self.parent = parent
 
-        # Hierachial data:
+        # Hierarchial data:
         self.isFolder = (metadata['Type'] == 'CollectionType')
         self.files = [] if self.isFolder else None
 
@@ -71,15 +72,16 @@ class RmFile:
         else:
             basePath
 
-    def exportPdf(self, targetPath):
+    def exportDoc(self, targetPath):
         '''
-        Downloads this file as pdf to a given path.
+        Downloads this file as pdf or rmdoc depending in the file extension to a given path.
         I may take a while before the download is started,
         due to the conversion happening on the reMarkable device.
 
         Returns bool with True for successful and False for unsuccessful.
         '''
-        response = requests.get(RM_WEB_UI_URL + '/download/' + self.id + '/placeholder', stream=True)
+        (_, filetype) = os.path.splitext(targetPath)
+        response = requests.get(RM_WEB_UI_URL + '/download/' + self.id + '/' + filetype[1:], stream=True)
 
         if not response.ok:
             return False
@@ -101,12 +103,12 @@ class RmFile:
 
 def iterateAll(filesOrRmFile):
     '''
-    Yields all files in this iterable (list, tuple, ...) or file including subfiles and folders.
+    Yields all files in this iterable (list, tuple, ...) or file including sub-files and folders.
 
     In case any (nested) value that isn't a iterable or of class api.RmFile a ValueError will be raised!
     '''
     if isinstance(filesOrRmFile, RmFile):
-        # Yield file and optional sub files recursivly:
+        # Yield file and optional sub files recursively:
         yield filesOrRmFile
         if filesOrRmFile.isFolder:
             for recursiveSubFile in iterateAll(filesOrRmFile.files):
@@ -123,20 +125,20 @@ def iterateAll(filesOrRmFile):
 
 def fetchFileStructure(parentRmFile=None):
     '''
-    Fetches the fileStructure from the reMarkable USB webinterface.
+    Fetches the fileStructure from the reMarkable USB web interface.
 
     Specify a RmFile of type folder to fetch only all folders after the given one.
     Ignore to get all possible file and folders.
 
     Returns either list of files OR FILLS given parentRmFiles files
 
-    May throw RuntimeError or other releated ones from "requests"
-    if there are problems fetching the data from the usb webinterface.
+    May throw RuntimeError or other related ones from "requests"
+    if there are problems fetching the data from the USB web interface.
     '''
     if parentRmFile and not parentRmFile.isFolder:
         raise ValueError('"api.fetchFileStructure(parentRmFile)": parentRmFile must be None or of type folder!')
 
-    # Use own list if not parentRmFile is given (aka beeing in root)
+    # Use own list if not parentRmFile is given (aka being in root)
     if not parentRmFile:
         rootFiles = []
 
@@ -146,7 +148,7 @@ def fetchFileStructure(parentRmFile=None):
     response.encoding = 'UTF-8'  # Ensure, all Non-ASCII characters get decoded properly
 
     if not response.ok:
-        raise RuntimeError('Url %s responsed with status code %d' % (directoryMetadataUrl, response.status_code))
+        raise RuntimeError('Url %s responded with status code %d' % (directoryMetadataUrl, response.status_code))
 
     directoryMetadata = response.json()
 
@@ -158,7 +160,7 @@ def fetchFileStructure(parentRmFile=None):
         else:
             rootFiles.append(rmFile)
 
-        # Fetch subdirectories recursivly:
+        # Fetch subdirectories recursively:
         if rmFile.isFolder:
             fetchFileStructure(rmFile)
 

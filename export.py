@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-Export - Exports all files of the remarkable onto your PC as pdfs.
+Export - Exports all files of the remarkable onto your PC as PDFs and rmdoc.
 
 Info: If a file is already exported, it will get skipped by default.
 '''
@@ -9,11 +9,10 @@ Info: If a file is already exported, it will get skipped by default.
 import api
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from datetime import datetime
+from datetime import datetime, timezone
 from os import makedirs, utime
-from os.path import exists, getmtime
-from sys import stderr
-from time import time
+from os.path import exists, getmtime, splitext
+from sys import stderr, argv
 
 # ------------------------------
 # Config:
@@ -21,8 +20,10 @@ DEBUG = False
 # ------------------------------
 
 def local_time_offset():
-    now_timestamp = time()
-    return (datetime.fromtimestamp(now_timestamp) - datetime.utcfromtimestamp(now_timestamp)).total_seconds()
+    local_now = datetime.now()
+    utc_now = datetime.now(timezone.utc)
+    offset = (local_now - utc_now.replace(tzinfo=None)).total_seconds()
+    return offset
 
 def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles, onlyPathPrefix=None):
     # Preprocessing filterPath:
@@ -43,7 +44,7 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
     if onlyNotebooks:
         exportableFiles = list(filter(lambda rmFile: rmFile.isNotebook, exportableFiles))
 
-    # Filter for only bookmared if requested:
+    # Filter for only bookmarked if requested:
     if onlyBookmarked:
         exportableFiles = list(filter(lambda rmFile: rmFile.isBookmarked, exportableFiles))
 
@@ -94,14 +95,23 @@ def exportTo(files, targetFolderPath, onlyNotebooks, onlyBookmarked, updateFiles
 
         # Export file if necessary:
         if not skipFile:
+            (root, _) = splitext(path)
+            path_rmdoc = root + ".rmdoc"
+            path_pdf = root + ".pdf"
             try:
-                exportableFile.exportPdf(path)
+                exportableFile.exportDoc(path_rmdoc)
             except Exception as ex:
-                print('ERROR: Failed to export "%s" to "%s"' % (exportableFile.name, path))
+                print('ERROR: Failed to export "%s" to "%s"' % (exportableFile.name, path_rmdoc))
                 raise ex
             try:
-                local_mod_time = exportableFile.modifiedTimestamp + local_time_offset() 
-                utime(path, (local_mod_time, local_mod_time))  # Use timestamp from the reMarkable device
+                exportableFile.exportDoc(path_pdf)
+            except Exception as ex:
+                print('ERROR: Failed to export "%s" to "%s"' % (exportableFile.name, path_pdf))
+                raise ex
+            try:
+                local_mod_time = exportableFile.modifiedTimestamp + local_time_offset()
+                utime(path_pdf, (local_mod_time, local_mod_time))  # Use timestamp from the reMarkable device
+                utime(path_rmdoc, (local_mod_time, local_mod_time))  # Use timestamp from the reMarkable device
             except Exception as ex:
                 print('ERROR: Failed to change timestamp for exported file "%s"' % path)
                 raise ex
@@ -115,7 +125,7 @@ def printUsageAndExit():
 if __name__ == '__main__':
     # Disclaimer:
     print('DISCLAIMER: Please be aware that this puts the STRAIN of creating exported pdf files on YOUR REMARKABLE DEVICE rather than this computer.\n' \
-          'This can lead to UNEXPECTED BEHAVIOUR when many and/or big files are being exported.\n' \
+          'This can lead to UNEXPECTED BEHAVIOR when many and/or big files are being exported.\n' \
           'I WON\'T TAKE ANY RESPONSIBILITY for potential damage this may induce!\n', file=stderr)
 
     # Argument parsing:
@@ -171,5 +181,5 @@ if __name__ == '__main__':
         else:
             print('ERROR: %s' % ex, file=stderr)
             print(file=stderr)
-            print('Please make sure your reMarkable is connected to this PC and you have enabled the USB Webinterface in "Settings -> Storage".', file=stderr)
+            print('Please make sure your reMarkable is connected to this PC and you have enabled the USB web interface in "Settings -> Storage".', file=stderr)
             exit(1)

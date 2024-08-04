@@ -24,5 +24,5 @@ if __name__ == '__main__':
         else:
             print('ERROR: %s' % ex, file=stderr)
             print(file=stderr)
-            print('Please make sure your reMarkable is connected to this PC and you have enabled the USB Webinterface in "Settings -> Storage".', file=stderr)
+            print('Please make sure your reMarkable is connected to this PC and you have enabled the USB web interface in "Settings -> Storage".', file=stderr)
             exit(1)
